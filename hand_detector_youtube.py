@@ -5,26 +5,30 @@ import cv2
 import mediapipe as mp
 import yt_dlp
 
-try:
-    import mediapipe.python.solutions.hands as mp_hands
-    import mediapipe.python.solutions.drawing_utils as mp_drawing
-    import mediapipe.python.solutions.drawing_styles as mp_styles
-except ImportError:
-    mp_hands = mp.solutions.hands
-    mp_drawing = mp.solutions.drawing_utils
-    mp_styles = mp.solutions.drawing_styles
-
 def get_youtube_stream(url):
     ydl_opts = {
         'quiet': True,
-        'format': 'best[ext=mp4]/best',
+        'no_warnings': True,
+        # 쇼츠 및 일반 영상 모두에서 가용 포맷을 우선순위대로 탐색
+        'format': 'b/bestvideo+bestaudio/best',
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
-        return info['url']
+        
+        # 1. url 키가 직접 있는 경우
+        if 'url' in info:
+            return info['url']
+        # 2. formats 리스트가 있는 경우
+        elif 'formats' in info and len(info['formats']) > 0:
+            # url이 존재하는 포맷 중 최적의 포맷 선택
+            valid_formats = [f for f in info['formats'] if f.get('url')]
+            if valid_formats:
+                return valid_formats[-1]['url']
+        
+        raise KeyError("스트림 URL을 찾을 수 없습니다.")
 
-# 정상 재생 가능한 유튜브 영상 주소 지정
-youtube_url = "https://www.youtube.com/watch?v=gA7GqciN160"
+# 유튜브 쇼츠 URL
+youtube_url = "https://www.youtube.com/shorts/jMKhrRhOBoI"
 
 print("📹 YouTube 스트림 URL을 가져오는 중...")
 try:
@@ -33,6 +37,10 @@ try:
 except Exception as e:
     print(f"❌ 유튜브 스트림 추출 실패: {e}")
     exit()
+
+mp_hands = mp.solutions.hands
+mp_drawing = mp.solutions.drawing_utils
+mp_styles = mp.solutions.drawing_styles
 
 hands = mp_hands.Hands(
     static_image_mode=False,
