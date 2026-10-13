@@ -6,5 +6,6 @@
 - `hand_detector.py`: 손 마디(Keypoint) 및 랜드마크 감지
 - `face_detector.py`: 얼굴 랜드마크 및 바운딩 박스 감지
 - `hand_detector_youtube.py`: 유튜브 영상 스트리밍 기반 손 감지
+- `face_detector_youtube.py`: 유튜브 영상 스트리밍 기반 얼굴 감지
 - `selfie_segmentation.py`: 인물 배경 분리 및 배경 블러(Blur) 처리
 - `requirements.txt`: 필요 패키지 목록
