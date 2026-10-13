@@ -23,7 +23,7 @@ while cap.isOpened():
     result = segmenter.process(rgb)
 
     mask = (result.segmentation_mask > 0.5).astype(np.uint8)
-    blur = cv2.GaussianBlur(frame, (31, 31), 0)
+    blur = cv2.GaussianBlur(frame, (101,101), 0)
 
     output = frame * mask[..., None] + blur * (1 - mask[..., None])
     output = output.astype(np.uint8)
